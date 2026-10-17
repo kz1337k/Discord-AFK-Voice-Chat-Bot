@@ -1,9 +1,14 @@
 const { Client, GatewayIntentBits } = require("discord.js");
 const { joinVoiceChannel } = require("@discordjs/voice");
 
-const TOKEN = "Token Here";
-const GUILD_ID = "Guild ID Here";
-const VOICE_CHANNEL_ID = "Voice Channel ID here";
+const TOKEN = process.env.TOKEN;
+const GUILD_ID = process.env.GUILD_ID;
+const VOICE_CHANNEL_ID = process.env.VOICE_CHANNEL_ID;
+
+if (!TOKEN || !GUILD_ID || !VOICE_CHANNEL_ID) {
+  console.error("❌ Faltan variables de entorno: TOKEN, GUILD_ID o VOICE_CHANNEL_ID");
+  process.exit(1);
+}
 
 const client = new Client({
   intents: [
@@ -13,13 +18,19 @@ const client = new Client({
 });
 
 client.once("ready", () => {
-  console.log(`Bot giriş yaptı: ${client.user.tag}`);
+  console.log(`✅ Bot conectado como: ${client.user.tag}`);
 
   const guild = client.guilds.cache.get(GUILD_ID);
-  if (!guild) return console.log("Couldn't find the server");
+  if (!guild) {
+    console.error("❌ No se encontró el servidor");
+    return;
+  }
 
   const channel = guild.channels.cache.get(VOICE_CHANNEL_ID);
-  if (!channel) return console.log("Couldn't find the voice channel");
+  if (!channel) {
+    console.error("❌ No se encontró el canal de voz");
+    return;
+  }
 
   joinVoiceChannel({
     channelId: channel.id,
@@ -29,7 +40,7 @@ client.once("ready", () => {
     selfDeaf: true
   });
 
-  console.log("Bot is active and logged into voice channel 🗿");
+  console.log("🎧 Bot unido al canal de voz (AFK mode)");
 });
 
 client.login(TOKEN);
